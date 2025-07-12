@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: exploitx_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: exploitx
+      MYSQL_USER: exploitx
+      MYSQL_PASSWORD: exploitx
+    ports:
+      - "2004:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - exploitx_network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  web:
+    build: .
+    container_name: exploitx_web
+    restart: always
+    ports:
+      - "2005:5000"
+    environment:
+      - FLASK_APP=exploitx/app.py
+      - FLASK_ENV=production
+      - SECRET_KEY=your-secret-key-here-change-in-production
+      - SQLALCHEMY_DATABASE_URI=mysql+pymysql://root:root@db/exploitx
+      # SMTP Configuration for Login Notifications
+      - SMTP_SERVER=smtp.gmail.com
+      - SMTP_PORT=587
+      - SMTP_USERNAME=saimukesh
+      - SMTP_PASSWORD=P@$$w0rd123
+      - ADMIN_EMAIL=saimukeshr.cs2023@citchennai.net
+      - ENABLE_LOGIN_EMAILS=true
+    depends_on:
+      db:
+        condition: service_healthy
+    command: ["./start.sh"]
+    networks:
+      - exploitx_network
+
+volumes:
+  mysql_data:
+    driver: local
+
+networks:
+  exploitx_network:
+    driver: bridge 

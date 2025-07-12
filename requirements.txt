@@ -1,0 +1,12 @@
+Flask
+Flask-SQLAlchemy
+Flask-Login
+Flask-WTF
+Flask-Limiter
+Werkzeug
+MarkupSafe
+pymysql
+cryptography
+bleach
+email-validator
+python-dotenv
